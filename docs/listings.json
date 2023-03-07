@@ -3,10 +3,8 @@
     "listing": "/index.html",
     "items": [
       "/posts/logistic-regression-post/LogisticRegression.html",
-      "/posts/perceptron-blog-post/index_old.html",
-      "/posts/perceptron-blog-post/index copy.html",
-      "/posts/perceptron-blog-post/index.html",
       "/posts/logistic-regression-post/index.html",
+      "/posts/perceptron-blog-post/index.html",
       "/posts/example-blog-post/index.html"
     ]
   }
