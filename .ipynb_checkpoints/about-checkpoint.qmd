@@ -4,12 +4,15 @@ image: profile.jpg
 about:
   template: jolla
   links:
+    - icon: twitter
+      text: Twitter
+      href: https://twitter.com
     - icon: linkedin
       text: LinkedIn
-      href: https://www.linkedin.com/in/juliafairbank/
+      href: https://linkedin.com
     - icon: github
       text: Github
-      href: https://juliafairbank7.github.io/
+      href: https://github.com
 
 ---
 
