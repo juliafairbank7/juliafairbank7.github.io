@@ -33,7 +33,7 @@ class LogisticRegression:
             self.score_history.append(self.score(X, y))
             self.loss_history.append(self.empirical_risk(X, y))
         
-    def fit_stochastic(self, X, y, m_epochs=1000, momentum = True,batch_size = 10, alpha = .1):
+    def fit_stochastic(self, X, y, m_epochs=1000, momentum = False, batch_size = 10, alpha = .1):
         #preprocess X by padding with 1s
         X_hat = np.append(X, np.ones((X.shape[0], 1)), 1)
         
