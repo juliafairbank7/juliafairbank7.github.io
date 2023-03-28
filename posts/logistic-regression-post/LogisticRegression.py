@@ -14,7 +14,6 @@ class LogisticRegression:
         # list of the evolution of the score over the training period
         self.score_history = []
         self.loss_history = []
-
         
         n = X.shape[0]
         
