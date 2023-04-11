@@ -391,11 +391,12 @@ background-size: cover;
 </section>
 <section id="run-time-complexity" class="level1">
 <h1>run-time complexity()</h1>
-<p>For the update function,</p>
+<p>From Equation 1,</p>
 <p><span class="math display">\[
-        \tilde{w}^{(t+1)} = \tilde{w}^{(t)} + {y}_i \tilde{w}_{i}
-       \]</span></p>
-<p>the run-time complexity of one iteration would be <span class="math inline">\({p}^2\)</span>, so it only depends on the number of features, <span class="math inline">\({p}\)</span>, and doesn’t depend on the number of datapoints, <span class="math inline">\({n}\)</span>.</p>
+\tilde{w}^{(t+1)} = \tilde{w}^{(t)} + \mathbb1 (\tilde{y}_i \langle \tilde{w}^{(t)}, \tilde{w}_{(i)} \rangle \lt 0)  \tilde{y}_i \tilde{x}_i
+\]</span></p>
+<p>the run-time complexity of one iteration would be <span class="math inline">\(O({p})\)</span>, because the dot product of <span class="math inline">\(\langle \tilde{w}^{(t)}, \tilde{w}_{(i)} \rangle\)</span> takes <span class="math inline">\(O({p})\)</span> time, the dot product of <span class="math inline">\(\tilde{y}_i \tilde{x}_i\)</span> takes <span class="math inline">\(O({p})\)</span> time, and <span class="math inline">\(\tilde{w}^{(t)}\)</span> takes <span class="math inline">\(O({p})\)</span> time, for a total of <span class="math inline">\(O({3p})\)</span> time, which simplifies to <span class="math inline">\(O({p})\)</span>.</p>
+<p>From this , we know that the runtime complexity depends only on the number of features, <span class="math inline">\({p}\)</span>, and doesn’t depend on the number of datapoints, <span class="math inline">\({n}\)</span>.</p>
 
 
 </section>

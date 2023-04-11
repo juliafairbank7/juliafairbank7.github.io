@@ -13,6 +13,16 @@ class LinearRegression:
         self.w_hat = np.random.rand(X_hat.shape[1]) 
         
         self.w_hat = inv(X_hat.T@X_hat)@X_hat.T@y
+    
+    def w(self, X, y):
+        #preprocess X by padding with 1s
+        X_hat = np.append(X, np.ones((X.shape[0], 1)), 1)
+        
+        #initialize random w vector
+        self.w_hat = np.random.rand(X_hat.shape[1]) 
+        self.w_hat = inv(X_hat.T@X_hat)@X_hat.T@y
+        
+        return self.w_hat
         
     def fit_gradient(self, X, y, alpha=0.001, max_epochs=1000):
         #preprocess X by padding with 1s
@@ -24,7 +34,7 @@ class LinearRegression:
         self.score_history = []
         
         # compute complete gradient
-        for _ in range(max_epochs):
+        for _ in range(int(max_epochs)):
             grad = self.gradient(X, y)
             #update
             self.w_hat = (
@@ -41,6 +51,7 @@ class LinearRegression:
 
     def gradient(self, X, y):
         X_hat = np.append(X, np.ones((X.shape[0], 1)), 1)
+        y = y.reshape(-1, 1)
         
         P = X_hat.T@X_hat
         q = X_hat.T@y
@@ -51,10 +62,11 @@ class LinearRegression:
     def score(self, X, y):
         #preprocess X by padding with 1s
         X_hat = np.append(X, np.ones((X.shape[0], 1)), 1)
+        y = y.reshape(-1, 1)
         y_bar = y.mean()
         predictions = self.predict(X)
-        num = sum((predictions - y)**2)
-        denom = sum((y_bar - y)**2)
+        num = ((predictions - y)**2).sum()
+        denom = ((y_bar - y)**2).sum()
         c = 1 - (num/denom)
         
         return c
