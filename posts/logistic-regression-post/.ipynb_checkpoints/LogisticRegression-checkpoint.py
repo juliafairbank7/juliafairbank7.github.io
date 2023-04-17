@@ -22,15 +22,17 @@ class LogisticRegression:
             
             i = np.random.randint(0, n)
             
-            #update
-            self.w_hat = (
-                self.w_hat 
-                - alpha 
-                * self.gradient(X, y)
-            )
+            gradient = self.gradient(X_hat,y)
+            self.w_hat -= alpha * gradient
             
-            self.score_history.append(self.score(X, y))
-            self.loss_history.append(self.empirical_risk(X, y))
+            curr_loss = self.logistic_loss(X_hat,y)
+           
+            self.loss_history = np.append(self.loss_history, curr_loss)
+            self.score_history = np.append(self.score_history, self.score(X_hat,y))
+            
+            if (np.isclose(gradient.all(),0)):
+                done = True
+            
         
     def fit_stochastic(self, X, y, m_epochs=1000, momentum = False, batch_size = 10, alpha = .1):
         #preprocess X by padding with 1s
@@ -48,66 +50,40 @@ class LogisticRegression:
         for j in np.arange(m_epochs):
             order = np.arange(n)
             np.random.shuffle(order)
+            prev_loss = np.inf
 
             for batch in np.array_split(order, n // batch_size + 1):
-                x_batch = X[batch,:]
+                x_batch = X_hat[batch,:]
                 y_batch = y[batch]
-                grad = self.gradient(x_batch, y_batch) 
                 
-                #update
-                self.w_hat = (
-                self.w_hat 
-                - alpha 
-                * grad
-                )
+                gradient = self.gradient(x_batch,y_batch)
+                self.w_hat -= alpha * gradient
                 
-            self.score_history.append(self.score(X, y))
-            self.loss_history.append(self.empirical_risk(X, y))
+                curr_loss = self.logistic_loss(X_hat,y)
+            
+                if (np.isclose(curr_loss,0) or np.isnan(curr_loss)):
+                    break
+                    
+                if curr_loss < prev_loss:
+                    prev_loss = curr_loss
+                    
+            self.loss_history = np.append(self.loss_history, curr_loss)
+            self.score_history = np.append(self.score_history, self.score(X_hat,y))
             
                                   
     def predict(self, X):
-        X_hat = np.append(X, np.ones((X.shape[0], 1)), 1)            
-        return X_hat@self.w_hat
+        return 1*(X@self.w_hat)>0
 
     def gradient(self, X, y):
-        X_hat = np.append(X, np.ones((X.shape[0], 1)), 1)
-        
-        sum_i = 0;
-        n = X_hat.shape[0]
-        
-        for i in range(n):
-            sum_i += (self.sigmoid(
-                np.dot(self.w_hat, X_hat[i])
-            )
-                - y[i]
-            ) * X_hat[i]
-        
-        grad = 1/n * sum_i
-        
-        return grad
-                                  
+        sigmoid = self.sigmoid(X@self.w_hat)
+        return np.mean(((sigmoid - y)[:,np.newaxis]*X),axis=0)
+                       
     def sigmoid(self, z):
         return 1 / (1 + np.exp(-z))
                                   
-    
     def score(self, X, y):
-        #preprocess X by padding with 1s
-        X_hat = np.append(X, np.ones((X.shape[0], 1)), 1)
-        
-        predictions = self.predict(X)
-        
-        accuracy = predictions == y 
-        
-        accuracy = accuracy * 1
-        
-        accuracy = accuracy.mean()
-        
-        return accuracy
-    
+        return (y== self.predict(X)).mean()
                                   
-    def logistic_loss(self, y_hat, y): 
-        return -y*np.log(self.sigmoid(y_hat)) - (1-y)*np.log(1-self.sigmoid(y_hat))
-
-    def empirical_risk(self, X, y,):
-        y_hat = self.predict(X)
-        return self.logistic_loss(y_hat, y).mean()
+    def logistic_loss(self, X, y):
+        y_hat = X@self.w_hat
+        return (-y*np.log(self.sigmoid(y_hat)) - (1-y)*np.log(1-self.sigmoid(y_hat))).mean()
