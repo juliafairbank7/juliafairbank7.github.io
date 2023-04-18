@@ -2,11 +2,11 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/linear-regression-post/index.html",
-      "/posts/kernel-logistic-regression-post/index.html",
-      "/posts/logistic-regression-post/index.html",
-      "/posts/perceptron-blog-post/index.html",
-      "/posts/example-blog-post/index.html"
+      "/posts/Learning from Timnit Gebru/index.html",
+      "/posts/Linear Regression/index.html",
+      "/posts/Kernel Logistic Regression/index.html",
+      "/posts/Logistic Regression/index.html",
+      "/posts/Perceptron/index.html"
     ]
   }
 ]
