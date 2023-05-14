@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.189">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Julia Fairbank CSCI 0451 Blog – rfe</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<style>
+    .quarto-title-block .quarto-title-banner {
+      color: white;
+background-image: url(../../img/landscape.png);
+background-size: cover;
+    }
+    </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Julia Fairbank CSCI 0451 Blog</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_selection <span class="im">import</span> RFE</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.read_csv(<span class="st">"biomechanics_dataset_v1.csv"</span>) </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">12345</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-tags="[]" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> data.iloc[:,<span class="dv">1</span>:<span class="dv">60</span>]</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> data.iloc[:, <span class="dv">60</span>]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>x_train, x_test, y_train, y_test <span class="op">=</span> train_test_split(X,y, test_size <span class="op">=</span> <span class="fl">.2</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Set up</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LinearRegression()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>feat_select <span class="op">=</span> RFE(model, n_features_to_select <span class="op">=</span> <span class="dv">10</span>, step <span class="op">=</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>When using Recursive Feature Elimination, we need to select a few variables. First, we need to select what model we want to use. Since we are using multiple linear regression, we select linear regression. We also need to select how many features we want to use, and how many we want to remove during each recursion. These we chose arbitrarily for this example to be 10 and 1 respectively.</p>
+<p>If we then run our RFE, we find that it classified our features as True or False, where True refers to features it selected and False ones it did not.</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>feat_select.fit(X,y)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>feat_select.support_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<pre><code>array([False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False,  True,  True, False, False,
+        True,  True, False, False, False, False,  True,  True,  True,
+       False,  True,  True, False,  True])</code></pre>
+</div>
+</div>
+<p>From this we can see that it selected features :42, 43, 46, 47, 52, 53, 54, 56, 57 and 59. This means that the data set we would train our model on is the following</p>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>data.iloc[:,[<span class="dv">42</span>,<span class="dv">43</span>,<span class="dv">46</span>,<span class="dv">47</span>,<span class="dv">52</span>,<span class="dv">53</span>,<span class="dv">54</span>,<span class="dv">56</span>,<span class="dv">57</span>,<span class="dv">59</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>max_rfx</th>
+      <th>min_rfx</th>
+      <th>max_rfz</th>
+      <th>min_rfz</th>
+      <th>max_lfz</th>
+      <th>min_lfz</th>
+      <th>range_rfx</th>
+      <th>range_rfz</th>
+      <th>range_lfx</th>
+      <th>range_lfz</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>179.4015</td>
+      <td>-232.2776</td>
+      <td>1101.3711</td>
+      <td>48.8063</td>
+      <td>2322.2798</td>
+      <td>-13.4557</td>
+      <td>411.6791</td>
+      <td>1052.5648</td>
+      <td>1006.4781</td>
+      <td>2335.7355</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>140.1327</td>
+      <td>-189.7241</td>
+      <td>1092.3006</td>
+      <td>51.3111</td>
+      <td>2270.0012</td>
+      <td>-13.8138</td>
+      <td>329.8568</td>
+      <td>1040.9895</td>
+      <td>878.2801</td>
+      <td>2283.8150</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>106.3177</td>
+      <td>-124.4299</td>
+      <td>1117.9434</td>
+      <td>115.4112</td>
+      <td>1942.1915</td>
+      <td>-9.8942</td>
+      <td>230.7476</td>
+      <td>1002.5322</td>
+      <td>1006.2067</td>
+      <td>1952.0857</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>138.6102</td>
+      <td>-175.8547</td>
+      <td>1102.4140</td>
+      <td>7.9649</td>
+      <td>2509.2788</td>
+      <td>-9.1957</td>
+      <td>314.4649</td>
+      <td>1094.4491</td>
+      <td>1074.0880</td>
+      <td>2518.4745</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>175.0215</td>
+      <td>-219.5387</td>
+      <td>1119.0327</td>
+      <td>18.2982</td>
+      <td>2492.2496</td>
+      <td>-9.9647</td>
+      <td>394.5602</td>
+      <td>1100.7345</td>
+      <td>1116.0206</td>
+      <td>2502.2143</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>632</th>
+      <td>221.6785</td>
+      <td>-114.1301</td>
+      <td>947.5325</td>
+      <td>31.1219</td>
+      <td>1841.7965</td>
+      <td>-7.0486</td>
+      <td>335.8086</td>
+      <td>916.4106</td>
+      <td>762.2835</td>
+      <td>1848.8451</td>
+    </tr>
+    <tr>
+      <th>633</th>
+      <td>199.9496</td>
+      <td>-113.4915</td>
+      <td>958.0700</td>
+      <td>26.1562</td>
+      <td>1692.9015</td>
+      <td>-8.2001</td>
+      <td>313.4411</td>
+      <td>931.9138</td>
+      <td>730.4450</td>
+      <td>1701.1016</td>
+    </tr>
+    <tr>
+      <th>634</th>
+      <td>213.2872</td>
+      <td>-112.7565</td>
+      <td>998.6667</td>
+      <td>44.3632</td>
+      <td>1602.5900</td>
+      <td>-5.3440</td>
+      <td>326.0437</td>
+      <td>954.3035</td>
+      <td>726.2761</td>
+      <td>1607.9340</td>
+    </tr>
+    <tr>
+      <th>635</th>
+      <td>209.7961</td>
+      <td>-122.3425</td>
+      <td>939.1254</td>
+      <td>29.1908</td>
+      <td>1823.2046</td>
+      <td>-6.8408</td>
+      <td>332.1386</td>
+      <td>909.9346</td>
+      <td>801.7169</td>
+      <td>1830.0454</td>
+    </tr>
+    <tr>
+      <th>636</th>
+      <td>200.5381</td>
+      <td>-165.5618</td>
+      <td>935.7064</td>
+      <td>19.1782</td>
+      <td>1842.2350</td>
+      <td>-8.3528</td>
+      <td>366.0999</td>
+      <td>916.5282</td>
+      <td>786.5035</td>
+      <td>1850.5878</td>
+    </tr>
+  </tbody>
+</table>
+<p>637 rows × 10 columns</p>
+</div>
+</div>
+</div>
+<p>However, 10 was arbitrarily chosen, and may not be the best choice. If we run a series of RFE’s which select for 1 more feature than the last we can then plot these values to find our optimal choice for the number of features.</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> []</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">60</span>):</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    estm <span class="op">=</span> RFE(model, n_features_to_select <span class="op">=</span> x<span class="op">+</span><span class="dv">1</span>, step <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    estm.fit(x_train,y_train)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    scores.append(estm.score(x_test,y_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># define data values</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>x_val<span class="op">=</span> [] </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span> (<span class="dv">60</span>):</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    x_val.append(j)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>plt.plot(x_val, scores)  <span class="co"># Plot the chart</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Number of Features"</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Validation Score"</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Linear Regression"</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>plt.show() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="RFE_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>From this chart we can see that we will be able to use a model with 15 features without losing too much accuracy, so we will next use RFE to find out the variables we want to use.</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>feat_select <span class="op">=</span> RFE(model, n_features_to_select <span class="op">=</span> <span class="dv">15</span>, step <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>feat_select.fit(X,y)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>feat_select.support_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<pre><code>array([False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False,  True,  True, False, False,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+       False,  True,  True,  True,  True])</code></pre>
+</div>
+</div>
+<p>These refer to the following data set:</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>data.iloc[:,[<span class="dv">42</span>,<span class="dv">43</span>,<span class="dv">46</span>,<span class="dv">47</span>,<span class="dv">48</span>,<span class="dv">49</span>,<span class="dv">50</span>,<span class="dv">51</span>,<span class="dv">52</span>,<span class="dv">53</span>,<span class="dv">54</span>,<span class="dv">56</span>,<span class="dv">57</span>,<span class="dv">58</span>,<span class="dv">59</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>max_rfx</th>
+      <th>min_rfx</th>
+      <th>max_rfz</th>
+      <th>min_rfz</th>
+      <th>max_lfx</th>
+      <th>min_lfx</th>
+      <th>max_lfy</th>
+      <th>min_lfy</th>
+      <th>max_lfz</th>
+      <th>min_lfz</th>
+      <th>range_rfx</th>
+      <th>range_rfz</th>
+      <th>range_lfx</th>
+      <th>range_lfy</th>
+      <th>range_lfz</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>179.4015</td>
+      <td>-232.2776</td>
+      <td>1101.3711</td>
+      <td>48.8063</td>
+      <td>121.2052</td>
+      <td>-885.2729</td>
+      <td>130.9304</td>
+      <td>-414.4391</td>
+      <td>2322.2798</td>
+      <td>-13.4557</td>
+      <td>411.6791</td>
+      <td>1052.5648</td>
+      <td>1006.4781</td>
+      <td>545.3695</td>
+      <td>2335.7355</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>140.1327</td>
+      <td>-189.7241</td>
+      <td>1092.3006</td>
+      <td>51.3111</td>
+      <td>111.2187</td>
+      <td>-767.0614</td>
+      <td>128.0167</td>
+      <td>-475.8343</td>
+      <td>2270.0012</td>
+      <td>-13.8138</td>
+      <td>329.8568</td>
+      <td>1040.9895</td>
+      <td>878.2801</td>
+      <td>603.8510</td>
+      <td>2283.8150</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>106.3177</td>
+      <td>-124.4299</td>
+      <td>1117.9434</td>
+      <td>115.4112</td>
+      <td>178.4852</td>
+      <td>-827.7215</td>
+      <td>161.8112</td>
+      <td>-437.5895</td>
+      <td>1942.1915</td>
+      <td>-9.8942</td>
+      <td>230.7476</td>
+      <td>1002.5322</td>
+      <td>1006.2067</td>
+      <td>599.4007</td>
+      <td>1952.0857</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>138.6102</td>
+      <td>-175.8547</td>
+      <td>1102.4140</td>
+      <td>7.9649</td>
+      <td>170.5486</td>
+      <td>-903.5394</td>
+      <td>187.1682</td>
+      <td>-430.2591</td>
+      <td>2509.2788</td>
+      <td>-9.1957</td>
+      <td>314.4649</td>
+      <td>1094.4491</td>
+      <td>1074.0880</td>
+      <td>617.4273</td>
+      <td>2518.4745</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>175.0215</td>
+      <td>-219.5387</td>
+      <td>1119.0327</td>
+      <td>18.2982</td>
+      <td>176.3782</td>
+      <td>-939.6424</td>
+      <td>177.3536</td>
+      <td>-420.4205</td>
+      <td>2492.2496</td>
+      <td>-9.9647</td>
+      <td>394.5602</td>
+      <td>1100.7345</td>
+      <td>1116.0206</td>
+      <td>597.7741</td>
+      <td>2502.2143</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>632</th>
+      <td>221.6785</td>
+      <td>-114.1301</td>
+      <td>947.5325</td>
+      <td>31.1219</td>
+      <td>69.2794</td>
+      <td>-693.0041</td>
+      <td>121.9773</td>
+      <td>-342.0296</td>
+      <td>1841.7965</td>
+      <td>-7.0486</td>
+      <td>335.8086</td>
+      <td>916.4106</td>
+      <td>762.2835</td>
+      <td>464.0069</td>
+      <td>1848.8451</td>
+    </tr>
+    <tr>
+      <th>633</th>
+      <td>199.9496</td>
+      <td>-113.4915</td>
+      <td>958.0700</td>
+      <td>26.1562</td>
+      <td>60.6210</td>
+      <td>-669.8240</td>
+      <td>129.1773</td>
+      <td>-342.2472</td>
+      <td>1692.9015</td>
+      <td>-8.2001</td>
+      <td>313.4411</td>
+      <td>931.9138</td>
+      <td>730.4450</td>
+      <td>471.4245</td>
+      <td>1701.1016</td>
+    </tr>
+    <tr>
+      <th>634</th>
+      <td>213.2872</td>
+      <td>-112.7565</td>
+      <td>998.6667</td>
+      <td>44.3632</td>
+      <td>56.2369</td>
+      <td>-670.0392</td>
+      <td>111.4454</td>
+      <td>-329.7390</td>
+      <td>1602.5900</td>
+      <td>-5.3440</td>
+      <td>326.0437</td>
+      <td>954.3035</td>
+      <td>726.2761</td>
+      <td>441.1844</td>
+      <td>1607.9340</td>
+    </tr>
+    <tr>
+      <th>635</th>
+      <td>209.7961</td>
+      <td>-122.3425</td>
+      <td>939.1254</td>
+      <td>29.1908</td>
+      <td>67.6610</td>
+      <td>-734.0559</td>
+      <td>149.3230</td>
+      <td>-383.7818</td>
+      <td>1823.2046</td>
+      <td>-6.8408</td>
+      <td>332.1386</td>
+      <td>909.9346</td>
+      <td>801.7169</td>
+      <td>533.1048</td>
+      <td>1830.0454</td>
+    </tr>
+    <tr>
+      <th>636</th>
+      <td>200.5381</td>
+      <td>-165.5618</td>
+      <td>935.7064</td>
+      <td>19.1782</td>
+      <td>91.0192</td>
+      <td>-695.4843</td>
+      <td>150.5726</td>
+      <td>-252.4603</td>
+      <td>1842.2350</td>
+      <td>-8.3528</td>
+      <td>366.0999</td>
+      <td>916.5282</td>
+      <td>786.5035</td>
+      <td>403.0329</td>
+      <td>1850.5878</td>
+    </tr>
+  </tbody>
+</table>
+<p>637 rows × 15 columns</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> RandomForestRegressor()</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>feat_select <span class="op">=</span> RFE(model, n_features_to_select <span class="op">=</span> <span class="dv">15</span>, step <span class="op">=</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>However, linear regression is not the only model that can deal with continous data. We can also use random forest regression. If we use random forest regression, and select 15 features again, we get a higher score than we did with linear regression. We also get slightly different features selected.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>feat_select.fit(x_train, y_train)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(feat_select.score(x_test, y_test))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>feat_select.support_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>However, we don’t know if 15 is the optimal amount of features. As such, we can follow the same route we did with linear regression and graph our scores.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> []</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">60</span>):</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    estm <span class="op">=</span> RFE(model, n_features_to_select <span class="op">=</span> x<span class="op">+</span><span class="dv">1</span>, step <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    estm.fit(x_train,y_train)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    scores.append(estm.score(x_test,y_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>x_val<span class="op">=</span> [] </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span> (<span class="dv">60</span>):</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    x_val.append(j<span class="op">+</span><span class="dv">5</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>plt.plot(x_val, scores)  <span class="co"># Plot the chart</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Number of Features"</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Validation Score"</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Random Forest Regression"</span>)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>plt.show() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This shows us that any number of features over 10 will give us a model as good as using more. Therefore, to keep things similar between our two models we can use 15 features.</p>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

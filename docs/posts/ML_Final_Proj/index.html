@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.189">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Cece Ziegler, David Byrne, Julia Fairbank, Sam Ehrsam">
+<meta name="dcterms.date" content="2023-05-14">
+<meta name="description" content="CSCI 0451 Final Project: Create a machine learning model that predicts a players bat speed utilizing Recursive Feature Elimination, Linear Regression and Random Forest Regression models.">
+
+<title>Julia Fairbank CSCI 0451 Blog - Predicting Bat Speed</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<style>
+    .quarto-title-block .quarto-title-banner {
+      color: white;
+background-image: url(../../img/landscape.png);
+background-size: cover;
+    }
+    </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Julia Fairbank CSCI 0451 Blog</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Predicting Bat Speed</h1>
+                  <div>
+        <div class="description">
+          CSCI 0451 Final Project: Create a machine learning model that predicts a players bat speed utilizing Recursive Feature Elimination, Linear Regression and Random Forest Regression models.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Cece Ziegler, David Byrne, Julia Fairbank, Sam Ehrsam </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">May 14, 2023</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="abstract-and-overview-of-significance-of-topic" class="level1">
+<h1>Abstract and Overview of Significance of Topic</h1>
+<p>Bat speed is a measure of player performance that has become increasingly popular for player development over the past decade. It is typically measured as the speed that the sweet spot of the bat (about 6 inches from the end of the barrel) is traveling when contact is made with the baseball. Bat speed has become increasingly popular due to its high correlation with exit velocity and subsequently hitting metrics such as expected batting average (xBA) or expected weighted on base average (xWOBA). Metrics such as xBA and xWOBA are modern metrics that are used to effectively quantify a players ability to contribute offensively in a positive manner. This increasing popularity in bat speed has led to a related increase in training methodologies based around developing it. Coaches across all levels of play use bat speed as a KPI to validate and inform individualized coaching decisions.</p>
+</section>
+<section id="formal-introduction-to-topic" class="level1">
+<h1>Formal Introduction to Topic</h1>
+<p>For our final project, we are using data from the Open Biomechanics Project (OBP) driveline baseball research. Our data captures the biomechanical breakdown of a baseball player’s swing by measuring forces produced by different body parts in three dimensions over exact instances in time, for example, at instance X, player 103’s 2nd swing has a max lead hip force in the y direction of 111.73. The data was captured using a combination of ground force plates, a marker motion capture system, bat speed sensors, and ball flight monitors. The available data is rather robust, accounting for every piece of information that could be responsible for a baseball swing.</p>
+<p>For our project, our goal is to create a machine learning model that uses this OBP data to identify the most important features of a player’s swing when generating bat speed, and then use those features to accurately predict a player’s bat speed. By comparing an athlete’s true bat speed to their predicted bat speed based on our model, the player could identify how efficiently they are swinging. We hope that this model could be used by baseball players and coaches to address the unique aspects of a player’s swing that could contribute to a higher bat speed, which in turn, would the players reach their fullest potential based on where their inefficiencies lie. Our project can be broken down into two main processes: Identifying the key features that contribute to bat speed. Creating a model that uses the key features to predict bat speed. For the first step, we have decided to run a Recursive Feature Elimination(RFE) on the 60 potential features from our dataset to pull out a smaller number of strong predictive features to use in our model. Next, using those select features, we will run a regression analysis to create a model that can be used to predict a player’s bat speed. Let’s take a closer look at these analyses.</p>
+</section>
+<section id="values-statement" class="level1">
+<h1>Values Statement</h1>
+<ul>
+<li>see assignment post for what to include here</li>
+</ul>
+</section>
+<section id="materials-and-methods" class="level1">
+<h1>Materials and Methods:</h1>
+</section>
+<section id="data" class="level1">
+<h1>Data</h1>
+<p>From the OBP dataset, we will be focusing on baseball-hitting data, specifically force plate and joint velocity to predict bat speed. The original datasets can be found <a href="https://github.com/drivelineresearch/openbiomechanics">here</a>. Driveline baseball research collected this data using a combination of ground force plates, a marker motion capture system, bat speed sensors, and ball flight monitors. Originally, both the force plate and joint velocity datasets had over 1,000,000 observations, with each individual swing including thousands of observations because the swing was broken down by milliseconds. We felt it was unnecessary to keep the time aspect of the dataset, as the velocities produced for each feature variable were very similar from millisecond to millisecond, and the large datasets were difficult to work with. To get rid of the time component and obtain a more reasonably sized data set, we found the minimum, maximum and range of each feature variable in the dataset for every swing. Each swing is labeled by session_swing in our dataset, and each row is a different swing. The session swing is labeled by player ID and swing number, for example, session_swing 111_3 is player 111’s third swing. Not all players have the same number of swings in the dataset, but we don’t think this should have any impact on our results. After eliminating the time aspect, each swing has 60 potential feature variables. The 60 feature variables include the min, max and range of the forces produced by many different body parts in the x, y and z directions during a player’s swing. Some examples include lead shoulder which is the player’s shoulder closest to the pitcher, and rear hip which is the player’s hip furthest from the pitcher.</p>
+<p>Our data possesses some limitations as it exclusively represents male baseball players and doesn’t include any data from female softball players. We think it would be interesting for Driveline baseball research to expand to softball to eliminate some of the gender bias they have inadvertently caused.</p>
+</section>
+<section id="recursive-feature-elimination" class="level1">
+<h1>Recursive Feature Elimination</h1>
+<p>Recursive Feature Elimination, or RFE is a recursive algorithm that is used to find the most impactful features out of a large feature set. This is accomplished by training machine learning on all the features, and then removing the least impactful features. This process is repeated with the smaller feature set, until the feature set is of the desired size. This can help prevent overfitting and allow for easier use and training. This does require that the model it is being used to select features has a way to calculate the effect of features, which means that it won’t work for every model, or some determinator has to be created for it to be used. Another drawback is that unless proper testing is done to find out the amount of impactful features, the accuracy can be diminished beyond the benefits of avoiding overfitting.</p>
+</section>
+<section id="multiple-linear-regression" class="level1">
+<h1>Multiple Linear Regression</h1>
+<p>Because our project is concerned with predicting bat speed, we require a numeric prediction model, rather than a classification prediction model. We decided to use Multiple Linear Regression, which allows us to take two or more features in a dataset to predict a single numeric dependent variable, bat speed. Multiple Linear Regression differs from regular Linear Regression in that you can use more than one feature to predict the target variable. Once built, we can isolate each individual feature and evaluate its impact on the target variable.</p>
+<p>With our linear regression model, we will be using the Mean Squared Error (MSE) loss function to determine the accuracy and performance of our model.</p>
+</section>
+<section id="random-forest-regression" class="level1">
+<h1>Random Forest Regression</h1>
+<p>Random Forest Regression is a technique that creates multiple decision trees and averages their outputs to give a final result that often has a high prediction/classification rate. The process involves the user selecting the amount, n, of decision trees to be created, then using the bootstrapping method to randomly select k data samples from the training set. (Bootstrapping is simply the process of randomly selecting subsets from a dataset over a certain number of iterations and a certain number of variables, then the results from each subset are averaged together which returns a more powerful result.) Then, create n decision trees using different random k values. Using the decision trees, predict regression results that can be used on unseen data. Finally, the regression results are all averaged together, returning a final regression output. Random Forests generally provide high accuracy for feature selection as it generates uncorrelated decision trees built by choosing a random set of features for each tree.</p>
+</section>
+<section id="variable-overview" class="level1">
+<h1>Variable Overview</h1>
+<p>The features which we have created our data set with fall into two main categories: biomechanics data and force plate data. Beginning with the biomechanics data, we have a set of joints and their associated angular velocities in three planes of motion. We have information on lead hip, lead shoulder, rear hip, rear shoulder, pelvis, torso, and the torso-pelvis complex. For each of these joints, we calculated the range of velocities and maximum velocities for each swing captured. With the force plate data, the lead foot and rear foot are independently observed, and the data is split among the three planes of motion along the x, y, and z axes. For each pairing of foot and plane of motion, we calculated the minimum, maximum, and range of the force produced.</p>
+</section>
+<section id="the-process" class="level1">
+<h1>The Process</h1>
+<section id="step-1-cleaning-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-cleaning-the-data">Step 1: Cleaning the Data</h3>
+<p>Our original dataset contained over 1,000,000 observations that were grouped by session_swing. Each swing contained hundreds of observations that analyzed a variety of features over time (~0.0028 seconds between captures). For our project, we wanted to remove this time aspect and instead create a simplified dataset that contained the minimum, maximum, and range values of the features of interest for each swing.</p>
+<p>To do so, we imported our dataset in R and grouped it by the session_swing variable, and, by using base R functions, calculated the minimum, maximum, and range of each feature variable of interest. We repeated this for the force plate dataset and joint velocity dataset, then used left-join to combine the two datasets to create a conglomerate dataset with all potential predictive features for each session_swing variable.</p>
+<p>We then added our target vector, max bat speed, from POI_metrics.csv to create our fill dataset that includes our target vector.</p>
+<p>This process allowed us to get reduce the size of our dataset from over 1,000,000 observations to 665 session_swings.</p>
+</section>
+<section id="step-2-rfe-feature-selection" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-rfe-feature-selection">Step 2: RFE Feature Selection</h3>
+<p>We used SKLearn’s RFE feature collection class, which can be found <a href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html">here</a>.</p>
+<p>The RFE model from the SKLearn class allowed us to gain the base understanding we needed to implement our own version of RFE. After reading through the API and playing around with the RFE feature from SKLearn, we decided to implement our own version of RFE to use with the linear regression model we also implemented. Our RFE function tkaes in three parameters: a feature matrix, X, a target vetor, y, and the number of features we want to be selected, k. The function uses a nested for loop to run through all values i in 1:k and at each iteration, j, checks the weight of all the remaining features that were fit on the linear regression model. From here, the best features are selected as the features with the minimum absolutle value of weight. We use this function in conjunction with our linear regression model to find the number of feautres within our dataset that most accuratley predict the batspeed of a player.</p>
+</section>
+<section id="step-3-building-the-models-multiple-linear-regression-and-random-forest" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-building-the-models-multiple-linear-regression-and-random-forest">Step 3: Building the Models —&nbsp;Multiple Linear Regression and Random Forest</h3>
+<p>We decided to implement our own linear regression model similar to the work we did in class, selecting just the analytic version. We were able to pull out score and predict functions from our previous blog post implementation. We had to modify our fit function by adding a regualarization term to the weight vector to help avoid over/under-fitting the model.</p>
+</section>
+<section id="step-4-testing-the-models-linear-regression-and-random-forest" class="level3">
+<h3 class="anchored" data-anchor-id="step-4-testing-the-models-linear-regression-and-random-forest">Step 4: Testing the Models: Linear Regression and Random Forest</h3>
+<p>To test and train the models, we used an 80/20 train/test split. For both models, we ran a loop to show our the training and testing scores while increasing the number of selected features for the recursive feature elimination model. Once we identified the optimal range of features to use on the Multiple Linear Regression and Random Forest Regression models, we created subsets of our training and testing data to contain the selected features. Finally, we trained and tested our models on the data subsets (80 train/20 split).</p>
+</section>
+</section>
+<section id="results-and-conclusion" class="level1">
+<h1>Results and Conclusion</h1>
+<section id="linear-regression" class="level3">
+<h3 class="anchored" data-anchor-id="linear-regression">Linear Regression</h3>
+<p>Below shows the effect of increasing the number of features on the accuracy scores produced by the Linear Regression model during RFE. As we can see, our training and testing accuracy scores tend to increase as the number of features increase.</p>
+<p>We noticed that our model tends to have a higher testing accuracy when the model is ran on fewer features, and has the best training score when the model uses all 60 features. However, because we wanted to identify 10-20 key features, we decided to train and test our model on the 13 best features, which we selected as value that yields the second best testing score.</p>
+<p>The table shows the 13 most important features as selected by our RFE function. These results were quite unexpected, including values like min_rfx and min_rfy as selected variables of importance. min_rfx and min_rfy represent the minimum rear force produced in the x and y directions, which essentially represent the load, or backwards movement prior to the actual swing itself. Other variables make sense as being some of the most important features, such as range_lead_hip_z, and max_torso_pelvis_x as these are body parts that are essitial in creating the rotational force of a swing to help produce a better bat speed.</p>
+<p>Using a subset of these 13 features, we trained and tested our model, which produced a testing accuracy score of 38.7%. Unfortunately, this low accuracy indicates that our model isn’t performing as we had hoped. It could mean that our data doesn’t have a strong linear seperability which indicates there is nothing wrong with our model, but rather it isn’t the best model option for our data. Becasue of this, we decided to see if we could produce stronger results by using the Random Forest Regression model.</p>
+<div class="cell" data-jupyter="{&quot;source_hidden&quot;:true}" data-tags="[]" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> LinearRegressionAnalytic <span class="im">import</span> LinearRegressionAnalytic</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> LinearRegressionAnalytic <span class="im">import</span> rfe</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.read_csv(<span class="st">"biomechanics_dataset_v1.csv"</span>) </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> data.iloc[:,<span class="dv">1</span>:<span class="dv">60</span>]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> data.iloc[:, <span class="dv">60</span>]</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>x_train, x_test, y_train, y_test <span class="op">=</span> train_test_split(X,y, test_size <span class="op">=</span> <span class="fl">.2</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>val_scores <span class="op">=</span> []</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>train_scores <span class="op">=</span> []</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">60</span>):</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    selected_features <span class="op">=</span> rfe(x_train, y_train, k)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    feature_mask <span class="op">=</span> np.zeros(x_train.shape[<span class="dv">1</span>], dtype<span class="op">=</span><span class="bu">bool</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">#masking to include only the selected features</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    feature_mask[selected_features] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">#subseting x train and test to include only selected feautres</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    X_train_selected <span class="op">=</span> x_train.loc[:, feature_mask]</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    X_test_selected <span class="op">=</span> x_test.loc[:, feature_mask]</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    lr <span class="op">=</span> LinearRegressionAnalytic()</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">#fitting model on selected features</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    lr.fit(X_train_selected, y_train)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="co">#appending score to score list</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    val_scores.append(lr.score(X_test_selected, y_test))</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    train_scores.append(lr.score(X_train_selected, y_train))</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the results</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">61</span>), val_scores, label<span class="op">=</span><span class="st">'Testing accuracy'</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">61</span>), train_scores, label<span class="op">=</span><span class="st">'Training accuracy'</span>)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Number of Features"</span>)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Accuracy"</span>)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Accuracy Scores Produced by Linear Regression Model During RFE"</span>)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>feat_select <span class="op">=</span> rfe(x_train, y_train, <span class="dv">14</span>)</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>feat_select</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>display(data.iloc[:,[<span class="dv">33</span>, <span class="dv">34</span>, <span class="dv">3</span>, <span class="dv">35</span>, <span class="dv">37</span>, <span class="dv">6</span>, <span class="dv">39</span>, <span class="dv">43</span>, <span class="dv">45</span>, <span class="dv">14</span>, <span class="dv">19</span>, <span class="dv">23</span>, <span class="dv">28</span>]])</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>x_train_lin <span class="op">=</span> x_train.iloc[:,[<span class="dv">33</span>, <span class="dv">34</span>, <span class="dv">3</span>, <span class="dv">35</span>, <span class="dv">37</span>, <span class="dv">6</span>, <span class="dv">39</span>, <span class="dv">43</span>, <span class="dv">45</span>, <span class="dv">14</span>, <span class="dv">19</span>, <span class="dv">23</span>, <span class="dv">28</span>]]</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>x_test_lin <span class="op">=</span> x_test.iloc[:,[<span class="dv">33</span>, <span class="dv">34</span>, <span class="dv">3</span>, <span class="dv">35</span>, <span class="dv">37</span>, <span class="dv">6</span>, <span class="dv">39</span>, <span class="dv">43</span>, <span class="dv">45</span>, <span class="dv">14</span>, <span class="dv">19</span>, <span class="dv">23</span>, <span class="dv">28</span>]]</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>lr.fit(x_train_lin, y_train)</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Testing Accuracy of Subset:"</span>, lr.score(x_test_lin, y_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="index_files/figure-html/cell-2-output-1.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>max_rear_shoulder_x</th>
+      <th>max_rear_shoulder_y</th>
+      <th>range_lead_hip_z</th>
+      <th>max_rear_shoulder_z</th>
+      <th>max_torso_y</th>
+      <th>range_lead_shoulder_z</th>
+      <th>max_torso_pelvis_x</th>
+      <th>min_rfx</th>
+      <th>min_rfy</th>
+      <th>range_rear_shoulder_y</th>
+      <th>range_torso_pelvis_x</th>
+      <th>max_lead_hip_z</th>
+      <th>max_pelvis_y</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>550.0243</td>
+      <td>514.1198</td>
+      <td>778.1339</td>
+      <td>1188.6807</td>
+      <td>182.7302</td>
+      <td>867.6362</td>
+      <td>182.4743</td>
+      <td>-232.2776</td>
+      <td>-88.0097</td>
+      <td>689.2249</td>
+      <td>233.0842</td>
+      <td>384.3450</td>
+      <td>88.3858</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>638.6019</td>
+      <td>535.2822</td>
+      <td>960.4793</td>
+      <td>1278.5380</td>
+      <td>196.9712</td>
+      <td>1054.5098</td>
+      <td>236.0902</td>
+      <td>-189.7241</td>
+      <td>-106.2254</td>
+      <td>812.9988</td>
+      <td>306.7874</td>
+      <td>520.8627</td>
+      <td>106.4238</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>580.0406</td>
+      <td>472.9189</td>
+      <td>784.0413</td>
+      <td>1588.7207</td>
+      <td>248.4432</td>
+      <td>988.9415</td>
+      <td>222.8233</td>
+      <td>-124.4299</td>
+      <td>-84.5785</td>
+      <td>708.1030</td>
+      <td>313.2967</td>
+      <td>433.6955</td>
+      <td>82.5397</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>635.8561</td>
+      <td>484.2663</td>
+      <td>1036.2757</td>
+      <td>888.1270</td>
+      <td>166.9048</td>
+      <td>1472.7250</td>
+      <td>168.7606</td>
+      <td>-175.8547</td>
+      <td>-122.1629</td>
+      <td>732.5588</td>
+      <td>228.6738</td>
+      <td>489.4716</td>
+      <td>81.4764</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>566.9714</td>
+      <td>502.2202</td>
+      <td>1093.3019</td>
+      <td>1487.6143</td>
+      <td>191.2448</td>
+      <td>1130.6572</td>
+      <td>220.7400</td>
+      <td>-219.5387</td>
+      <td>-72.5831</td>
+      <td>699.1772</td>
+      <td>286.4758</td>
+      <td>597.7220</td>
+      <td>75.9968</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>632</th>
+      <td>631.5529</td>
+      <td>488.3580</td>
+      <td>980.3030</td>
+      <td>1575.2948</td>
+      <td>165.8830</td>
+      <td>1150.6032</td>
+      <td>147.9856</td>
+      <td>-114.1301</td>
+      <td>-173.2356</td>
+      <td>804.6660</td>
+      <td>239.9022</td>
+      <td>354.5130</td>
+      <td>124.7927</td>
+    </tr>
+    <tr>
+      <th>633</th>
+      <td>571.2316</td>
+      <td>477.7701</td>
+      <td>748.3298</td>
+      <td>1604.9299</td>
+      <td>145.5400</td>
+      <td>1026.0944</td>
+      <td>188.9410</td>
+      <td>-113.4915</td>
+      <td>-157.5923</td>
+      <td>735.1128</td>
+      <td>276.8293</td>
+      <td>324.9995</td>
+      <td>137.1521</td>
+    </tr>
+    <tr>
+      <th>634</th>
+      <td>549.3600</td>
+      <td>407.3251</td>
+      <td>526.3367</td>
+      <td>1393.4961</td>
+      <td>128.0184</td>
+      <td>1029.3547</td>
+      <td>257.2261</td>
+      <td>-112.7565</td>
+      <td>-111.9854</td>
+      <td>584.3304</td>
+      <td>348.2130</td>
+      <td>207.2101</td>
+      <td>128.8111</td>
+    </tr>
+    <tr>
+      <th>635</th>
+      <td>623.2650</td>
+      <td>463.8467</td>
+      <td>1248.0062</td>
+      <td>1715.0544</td>
+      <td>136.8013</td>
+      <td>892.8699</td>
+      <td>177.4202</td>
+      <td>-122.3425</td>
+      <td>-161.2802</td>
+      <td>725.1355</td>
+      <td>266.6244</td>
+      <td>282.0038</td>
+      <td>157.1024</td>
+    </tr>
+    <tr>
+      <th>636</th>
+      <td>599.2501</td>
+      <td>505.9937</td>
+      <td>1433.3273</td>
+      <td>1480.4099</td>
+      <td>143.7898</td>
+      <td>1233.8176</td>
+      <td>169.0549</td>
+      <td>-165.5618</td>
+      <td>-132.0637</td>
+      <td>700.1916</td>
+      <td>234.5590</td>
+      <td>500.9032</td>
+      <td>107.8579</td>
+    </tr>
+  </tbody>
+</table>
+<p>637 rows × 13 columns</p>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Testing Accuracy of Subset: 0.386607442390802</code></pre>
+</div>
+</div>
+</section>
+<section id="random-forest-regression-1" class="level3">
+<h3 class="anchored" data-anchor-id="random-forest-regression-1">Random Forest Regression</h3>
+<p>Below is a graph that displays the training and testing scores produced by the Random Rorest Regression model when ran with RFE over all of the features. As we can see from the graph, this model performed much better than the Linear Regression model. Unlike the Linear Regression model, the Random Rorest model reached a peak around 10 features and maintained consistency at that score, whereas the Linear Regression model had increased variance between scores across all of the features.</p>
+<p>Because the Random Forest Regression model creates a series of trees using the bootstrapping method, we expected the model to have a better training accuracy and weren’t as concerned with overfitting. We also expected it to have a better accuracy score than the Linear Regression model because it can capture non-linear relationships, which we expect our data to have due to the poor performance of the Multiple Linear Regression model. Aditionally, because of the way the trees are built, the random forest model is less likely to be heavily affected by outliers in the data which will allow it to have a better testing accuracy score.</p>
+<p>We found that the Random Rorest Regression model had the higher training and validation scores than the Linear Regresion model. The training score reached nearly 100% when ran with more than 10 features. The testing accuracy reached around 65% at 10 features and had a slight increase as the number of features increased. To compare this model with the Linear Regression model, we chose the 15 most important features to test and train the Random Forest model.</p>
+<p>Interestingly, there is only one feature that the Linear Regression model and the Random Forest Regression model both selected: max_rear_shoulder_y. This feature captures the top hand on the bat, so if the shoulder isn’t moving in the swing, it will hinder the ability to produce enough rotational force from the torso.</p>
+<p>We were suprised to find that, of the 13 features selected by the Linear Regression model and of the 15 features selected by the Random Forest Regression model, there weren’t more similarities amongst the selected features between the two models. We were hoping to discover a few select features that both models identified as important features, and were interested to find that the majority of the selected features were different.</p>
+<p>We hypothesize that the dimentionality of the forces produced by each body part may be a factor that contributes toward the challenge of distinguishing significant features. For example, in the Linear Regression model, max_toros_y was selected as an important feautre, and in the Random Forest Regression model, max_torso_z was selected as an important feature. This indicates that the max force produced by the torso is important when creating and predicting bat speed. If we were to run this experiment again, we may try getting rid of the x, y and z components and just use the average of the forces produced by that body part.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_selection <span class="im">import</span> RFE</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> RandomForestRegressor()</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>scores_test <span class="op">=</span> []</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>scores_train <span class="op">=</span> []</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">60</span>):</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    estm <span class="op">=</span> RFE(model, n_features_to_select <span class="op">=</span> x<span class="op">+</span><span class="dv">1</span>, step <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    estm.fit(x_train,y_train)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    scores_test.append(estm.score(x_test,y_test))</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    scores_train.append(estm.score(x_train,y_train))</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>x_val<span class="op">=</span> [] </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span> (<span class="dv">60</span>):</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    x_val.append(j<span class="op">+</span><span class="dv">5</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>plt.plot(x_val, scores_test, label<span class="op">=</span><span class="st">'Testing accuracy'</span>)  <span class="co"># Plot the chart</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>plt.plot(x_val, scores_train, label<span class="op">=</span><span class="st">'Training accuracy'</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Number of Features"</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Accuracy Score"</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Random Forest Regression"</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>plt.show() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> RandomForestRegressor <span class="im">import</span> RandomForest</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>rf <span class="op">=</span> RandomForest()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>x_train_rf <span class="op">=</span> x_train.iloc[:,[<span class="dv">1</span>,<span class="dv">8</span>,<span class="dv">13</span>,<span class="dv">18</span>,<span class="dv">21</span>,<span class="dv">26</span>,<span class="dv">29</span>, <span class="dv">34</span>,<span class="dv">38</span>, <span class="dv">46</span>,<span class="dv">48</span>,<span class="dv">55</span>,<span class="dv">56</span>,<span class="dv">58</span>]]</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>x_test_rf <span class="op">=</span> x_test.iloc[:,[<span class="dv">1</span>,<span class="dv">8</span>,<span class="dv">13</span>,<span class="dv">18</span>,<span class="dv">21</span>,<span class="dv">26</span>,<span class="dv">29</span>, <span class="dv">34</span>,<span class="dv">38</span>, <span class="dv">46</span>,<span class="dv">48</span>,<span class="dv">55</span>,<span class="dv">56</span>,<span class="dv">58</span>]]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>rf.fit(x_train_rf, y_train, <span class="dv">1000</span>,<span class="dv">500</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(rf.score(x_test_rf, y_test))</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>feat_select <span class="op">=</span> rfe(x_train, y_train, <span class="dv">14</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>feat_select</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>display(data.iloc[:,[<span class="dv">1</span>,<span class="dv">8</span>,<span class="dv">13</span>,<span class="dv">18</span>,<span class="dv">21</span>,<span class="dv">26</span>,<span class="dv">29</span>, <span class="dv">34</span>,<span class="dv">38</span>, <span class="dv">46</span>,<span class="dv">48</span>,<span class="dv">55</span>,<span class="dv">56</span>,<span class="dv">58</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.5541368058167476</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>range_lead_hip_x</th>
+      <th>range_pelvis_y</th>
+      <th>range_rear_shoulder_x</th>
+      <th>range_torso_z</th>
+      <th>range_torso_pelvis_z</th>
+      <th>max_lead_shoulder_z</th>
+      <th>max_pelvis_z</th>
+      <th>max_rear_shoulder_y</th>
+      <th>max_torso_z</th>
+      <th>max_rfz</th>
+      <th>max_lfx</th>
+      <th>range_rfy</th>
+      <th>range_rfz</th>
+      <th>range_lfy</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>590.6812</td>
+      <td>371.0611</td>
+      <td>838.0101</td>
+      <td>848.3957</td>
+      <td>743.5585</td>
+      <td>617.1386</td>
+      <td>733.6451</td>
+      <td>514.1198</td>
+      <td>775.7749</td>
+      <td>1101.3711</td>
+      <td>121.2052</td>
+      <td>240.6389</td>
+      <td>1052.5648</td>
+      <td>545.3695</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>536.1970</td>
+      <td>393.4254</td>
+      <td>947.9660</td>
+      <td>814.2556</td>
+      <td>642.8480</td>
+      <td>751.1699</td>
+      <td>799.8748</td>
+      <td>535.2822</td>
+      <td>775.3766</td>
+      <td>1092.3006</td>
+      <td>111.2187</td>
+      <td>297.5680</td>
+      <td>1040.9895</td>
+      <td>603.8510</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>586.8320</td>
+      <td>396.8130</td>
+      <td>801.1592</td>
+      <td>823.2495</td>
+      <td>853.6754</td>
+      <td>723.6880</td>
+      <td>740.7065</td>
+      <td>472.9189</td>
+      <td>793.0441</td>
+      <td>1117.9434</td>
+      <td>178.4852</td>
+      <td>351.2961</td>
+      <td>1002.5322</td>
+      <td>599.4007</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>628.4384</td>
+      <td>402.3244</td>
+      <td>958.8471</td>
+      <td>870.6640</td>
+      <td>541.5395</td>
+      <td>810.9479</td>
+      <td>741.3719</td>
+      <td>484.2663</td>
+      <td>819.9890</td>
+      <td>1102.4140</td>
+      <td>170.5486</td>
+      <td>344.0314</td>
+      <td>1094.4491</td>
+      <td>617.4273</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>595.3172</td>
+      <td>348.1626</td>
+      <td>840.4242</td>
+      <td>809.9368</td>
+      <td>756.6446</td>
+      <td>862.6313</td>
+      <td>770.4950</td>
+      <td>502.2202</td>
+      <td>774.5865</td>
+      <td>1119.0327</td>
+      <td>176.3782</td>
+      <td>262.0008</td>
+      <td>1100.7345</td>
+      <td>597.7741</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>632</th>
+      <td>825.4631</td>
+      <td>350.8260</td>
+      <td>1015.7101</td>
+      <td>919.6701</td>
+      <td>587.4149</td>
+      <td>838.6431</td>
+      <td>679.5463</td>
+      <td>488.3580</td>
+      <td>859.0192</td>
+      <td>947.5325</td>
+      <td>69.2794</td>
+      <td>380.5133</td>
+      <td>916.4106</td>
+      <td>464.0069</td>
+    </tr>
+    <tr>
+      <th>633</th>
+      <td>768.7166</td>
+      <td>377.7951</td>
+      <td>1020.7830</td>
+      <td>910.0289</td>
+      <td>716.7429</td>
+      <td>799.7780</td>
+      <td>715.3288</td>
+      <td>477.7701</td>
+      <td>846.6447</td>
+      <td>958.0700</td>
+      <td>60.6210</td>
+      <td>365.7219</td>
+      <td>931.9138</td>
+      <td>471.4245</td>
+    </tr>
+    <tr>
+      <th>634</th>
+      <td>667.8735</td>
+      <td>366.3885</td>
+      <td>978.3792</td>
+      <td>880.3159</td>
+      <td>516.4786</td>
+      <td>815.2906</td>
+      <td>701.0455</td>
+      <td>407.3251</td>
+      <td>820.1794</td>
+      <td>998.6667</td>
+      <td>56.2369</td>
+      <td>331.5945</td>
+      <td>954.3035</td>
+      <td>441.1844</td>
+    </tr>
+    <tr>
+      <th>635</th>
+      <td>698.0434</td>
+      <td>390.7154</td>
+      <td>1029.8385</td>
+      <td>896.8795</td>
+      <td>616.6955</td>
+      <td>604.2217</td>
+      <td>681.9455</td>
+      <td>463.8467</td>
+      <td>838.6638</td>
+      <td>939.1254</td>
+      <td>67.6610</td>
+      <td>383.2294</td>
+      <td>909.9346</td>
+      <td>533.1048</td>
+    </tr>
+    <tr>
+      <th>636</th>
+      <td>764.1730</td>
+      <td>348.0633</td>
+      <td>1024.9879</td>
+      <td>907.0956</td>
+      <td>606.3088</td>
+      <td>830.5895</td>
+      <td>677.4534</td>
+      <td>505.9937</td>
+      <td>846.7994</td>
+      <td>935.7064</td>
+      <td>91.0192</td>
+      <td>346.1590</td>
+      <td>916.5282</td>
+      <td>403.0329</td>
+    </tr>
+  </tbody>
+</table>
+<p>637 rows × 14 columns</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="bias" class="level1">
+<h1>Bias</h1>
+<p>We created a model that predicts a player’s bat speed with approximately 65% accuracy, using around 10 features. As with any algorithm, we must consider any assumptions or biased data that could have resulted in systematic error throughout our process. Because our training data came from the Driveline Research and Development, our model was only trained on the players with close proximity or eligibility to their biomechanics facility. According to the <a href="https://www.census.gov/quickfacts/fact/table/kentcitywashington#">U.S. Census</a>, 43.3% of the population of Kent, Washington (home of Driveline R&amp;D) are white individuals, contrasted with 12.2% of the population being black individuals. While the data’s goal is to highlight specific bodily forces and movements that contribute to predicting bat speed rather than demographics like race, age, height, or weight, we must acknowledge that this data is most likely skewed toward white individuals and could be less accurate in predicting the bat speed of players of different races.</p>
+<p>Additionally, we must highlight that baseball is a male-dominated sport, with the rare exception of a few women playing the sport — see <a href="https://thehill.com/blogs/blog-briefing-room/news/599846-woman-makes-history-as-first-on-field-player-for-a-professional/">article on Alexis Hopkins</a>. While sports are typically gender segregated for the sake of “fairness” and an acknowledgment that male and female bodies are inherently different and will perform as such, factors like absolute strength and size are not as important in the sport of baseball, as they might be in gender-segregated sports like football and soccer. Rather, the <a href="https://www.womenssportsfoundation.org/wp-content/uploads/2016/10/co-ed-participation-womens-participation-in-mens-professional-baseball-the-foundation-position.pdf">Women’s Sports Foundation</a> explains that baseball involves skills that are combinations of timing, coordination, strength, knowledge of the game, strategies, and control, and argues that bat speed and bat control are more important than absolute strength.</p>
+<p>Yet, despite all of this, the Driveline R&amp;D data only contains the biomechanics of male batters. Therefore, if our model were to be improved and implemented, it would only perpetuate the segregation of men and women in this sport. If the data to improve a player’s bat speed can only improve male players, women will continue to be left in the dust.</p>
+<p>Driveline Baseball describes its <a href="https://www.drivelinebaseball.com/mission-and-purpose/">mission</a> as developing the future of baseball training by finding industry-leading insights; all while publishing those insights back to the baseball community where they belong. However, because baseball is a historically white and male-dominated sport, the “insights” that will be found will only contribute to solidifying that the “baseball community” remains dominated by players that fit those demographics.</p>
+<p>It is our duty to expand this research and development into more marginalized player communities, such as female athletes and athletes of other races. Then, we can use these insights to create unique training programs that empower and embrace their unique features and help them become the best athletes they can be.</p>
+</section>
+<section id="application" class="level1">
+<h1>Application</h1>
+<ul>
+<li>How could this be used by other teams/sports/groups</li>
+</ul>
+</section>
+<section id="group-contribution-statement" class="level1">
+<h1>Group Contribution Statement</h1>
+<p>Cece Ziegler: Helped with data cleaning. Built RFE function and Linear Regression model. Performed RFE and model experiments. Led writing “Results and Conclusion” sections.</p>
+<p>David Byrne: Introduced topic. Managed data cleaning. Led writing of “Abstract and Overview of Significance of Topic”, “Data”, “Variable Overview”, “Values Statement”, and “Application” sections.</p>
+<p>Julia Fairbank: Led writing of “Formal Introduction to Topic”, “Recursive Feature Elimination”, “Multiple Linear Regression”, “Random Forest Regression”, “The Process”, and “Bias” sections.</p>
+<p>Sam Ehrsam: Conducted initial RFE experiments with SKLearn library. Built Random Forest Regression model. Performed RFE experiments.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
