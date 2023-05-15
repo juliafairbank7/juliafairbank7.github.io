@@ -217,6 +217,11 @@ background-size: cover;
 
 
 
+<section id="source-code" class="level1">
+<h1>Source Code</h1>
+<p><a href="https://github.com/CeceZiegler1/ML_Final_Proj/blob/main/LinearRegressionAnalytic.py">Linear Regression &amp; RFE</a></p>
+<p><a href="https://github.com/CeceZiegler1/ML_Final_Proj/blob/main/RandomForestRegressor.py">Random Forest Regression</a></p>
+</section>
 <section id="abstract-and-overview-of-significance-of-topic" class="level1">
 <h1>Abstract and Overview of Significance of Topic</h1>
 <p>Bat speed is a measure of player performance that has become increasingly popular for player development over the past decade. It is typically measured as the speed that the sweet spot of the bat (about 6 inches from the end of the barrel) is traveling when contact is made with the baseball. Bat speed has become increasingly popular due to its high correlation with exit velocity and subsequently hitting metrics such as expected batting average (xBA) or expected weighted on base average (xWOBA). Metrics such as xBA and xWOBA are modern metrics that are used to effectively quantify a players ability to contribute offensively in a positive manner. This increasing popularity in bat speed has led to a related increase in training methodologies based around developing it. Coaches across all levels of play use bat speed as a KPI to validate and inform individualized coaching decisions.</p>
@@ -228,34 +233,33 @@ background-size: cover;
 </section>
 <section id="values-statement" class="level1">
 <h1>Values Statement</h1>
-<ul>
-<li>see assignment post for what to include here</li>
-</ul>
+<p>This project will mainly be utilized by coaches or anybody concerned with player development in baseball. The information that our model would provide to coaches would allow them to make better coaching decisions. In addition to helping coaching staffs, the players themselves would also benefit from more directed training and better evaluation standards. The baseball offseason is very short, so being able to make the most of this time is extremely valuable.</p>
+<p>This dataset is the first of is the first of its kind to be released as open source. When open-source pitch physics data first became available, it fundamentally changed the way in which baseball was viewed and played. This information allowed both pitchers and hitters to have reliable and measurable feedback on every pitch. The availability of pitch-level biomechanics data has the potential to once again fundamentally change baseball. By working on this project, we are contributing to the larger effort of the baseball community to better understand exactly what makes a baseball swing productive.</p>
 </section>
 <section id="materials-and-methods" class="level1">
 <h1>Materials and Methods:</h1>
-</section>
-<section id="data" class="level1">
-<h1>Data</h1>
+<section id="data" class="level3">
+<h3 class="anchored" data-anchor-id="data">Data</h3>
 <p>From the OBP dataset, we will be focusing on baseball-hitting data, specifically force plate and joint velocity to predict bat speed. The original datasets can be found <a href="https://github.com/drivelineresearch/openbiomechanics">here</a>. Driveline baseball research collected this data using a combination of ground force plates, a marker motion capture system, bat speed sensors, and ball flight monitors. Originally, both the force plate and joint velocity datasets had over 1,000,000 observations, with each individual swing including thousands of observations because the swing was broken down by milliseconds. We felt it was unnecessary to keep the time aspect of the dataset, as the velocities produced for each feature variable were very similar from millisecond to millisecond, and the large datasets were difficult to work with. To get rid of the time component and obtain a more reasonably sized data set, we found the minimum, maximum and range of each feature variable in the dataset for every swing. Each swing is labeled by session_swing in our dataset, and each row is a different swing. The session swing is labeled by player ID and swing number, for example, session_swing 111_3 is player 111’s third swing. Not all players have the same number of swings in the dataset, but we don’t think this should have any impact on our results. After eliminating the time aspect, each swing has 60 potential feature variables. The 60 feature variables include the min, max and range of the forces produced by many different body parts in the x, y and z directions during a player’s swing. Some examples include lead shoulder which is the player’s shoulder closest to the pitcher, and rear hip which is the player’s hip furthest from the pitcher.</p>
 <p>Our data possesses some limitations as it exclusively represents male baseball players and doesn’t include any data from female softball players. We think it would be interesting for Driveline baseball research to expand to softball to eliminate some of the gender bias they have inadvertently caused.</p>
 </section>
-<section id="recursive-feature-elimination" class="level1">
-<h1>Recursive Feature Elimination</h1>
+<section id="recursive-feature-elimination" class="level3">
+<h3 class="anchored" data-anchor-id="recursive-feature-elimination">Recursive Feature Elimination</h3>
 <p>Recursive Feature Elimination, or RFE is a recursive algorithm that is used to find the most impactful features out of a large feature set. This is accomplished by training machine learning on all the features, and then removing the least impactful features. This process is repeated with the smaller feature set, until the feature set is of the desired size. This can help prevent overfitting and allow for easier use and training. This does require that the model it is being used to select features has a way to calculate the effect of features, which means that it won’t work for every model, or some determinator has to be created for it to be used. Another drawback is that unless proper testing is done to find out the amount of impactful features, the accuracy can be diminished beyond the benefits of avoiding overfitting.</p>
 </section>
-<section id="multiple-linear-regression" class="level1">
-<h1>Multiple Linear Regression</h1>
+<section id="multiple-linear-regression" class="level3">
+<h3 class="anchored" data-anchor-id="multiple-linear-regression">Multiple Linear Regression</h3>
 <p>Because our project is concerned with predicting bat speed, we require a numeric prediction model, rather than a classification prediction model. We decided to use Multiple Linear Regression, which allows us to take two or more features in a dataset to predict a single numeric dependent variable, bat speed. Multiple Linear Regression differs from regular Linear Regression in that you can use more than one feature to predict the target variable. Once built, we can isolate each individual feature and evaluate its impact on the target variable.</p>
 <p>With our linear regression model, we will be using the Mean Squared Error (MSE) loss function to determine the accuracy and performance of our model.</p>
 </section>
-<section id="random-forest-regression" class="level1">
-<h1>Random Forest Regression</h1>
+<section id="random-forest-regression" class="level3">
+<h3 class="anchored" data-anchor-id="random-forest-regression">Random Forest Regression</h3>
 <p>Random Forest Regression is a technique that creates multiple decision trees and averages their outputs to give a final result that often has a high prediction/classification rate. The process involves the user selecting the amount, n, of decision trees to be created, then using the bootstrapping method to randomly select k data samples from the training set. (Bootstrapping is simply the process of randomly selecting subsets from a dataset over a certain number of iterations and a certain number of variables, then the results from each subset are averaged together which returns a more powerful result.) Then, create n decision trees using different random k values. Using the decision trees, predict regression results that can be used on unseen data. Finally, the regression results are all averaged together, returning a final regression output. Random Forests generally provide high accuracy for feature selection as it generates uncorrelated decision trees built by choosing a random set of features for each tree.</p>
 </section>
-<section id="variable-overview" class="level1">
-<h1>Variable Overview</h1>
+<section id="variable-overview" class="level3">
+<h3 class="anchored" data-anchor-id="variable-overview">Variable Overview</h3>
 <p>The features which we have created our data set with fall into two main categories: biomechanics data and force plate data. Beginning with the biomechanics data, we have a set of joints and their associated angular velocities in three planes of motion. We have information on lead hip, lead shoulder, rear hip, rear shoulder, pelvis, torso, and the torso-pelvis complex. For each of these joints, we calculated the range of velocities and maximum velocities for each swing captured. With the force plate data, the lead foot and rear foot are independently observed, and the data is split among the three planes of motion along the x, y, and z axes. For each pairing of foot and plane of motion, we calculated the minimum, maximum, and range of the force produced.</p>
+</section>
 </section>
 <section id="the-process" class="level1">
 <h1>The Process</h1>
@@ -557,7 +561,7 @@ background-size: cover;
 <h3 class="anchored" data-anchor-id="random-forest-regression-1">Random Forest Regression</h3>
 <p>Below is a graph that displays the training and testing scores produced by the Random Rorest Regression model when ran with RFE over all of the features. As we can see from the graph, this model performed much better than the Linear Regression model. Unlike the Linear Regression model, the Random Rorest model reached a peak around 10 features and maintained consistency at that score, whereas the Linear Regression model had increased variance between scores across all of the features.</p>
 <p>Because the Random Forest Regression model creates a series of trees using the bootstrapping method, we expected the model to have a better training accuracy and weren’t as concerned with overfitting. We also expected it to have a better accuracy score than the Linear Regression model because it can capture non-linear relationships, which we expect our data to have due to the poor performance of the Multiple Linear Regression model. Aditionally, because of the way the trees are built, the random forest model is less likely to be heavily affected by outliers in the data which will allow it to have a better testing accuracy score.</p>
-<p>We found that the Random Rorest Regression model had the higher training and validation scores than the Linear Regresion model. The training score reached nearly 100% when ran with more than 10 features. The testing accuracy reached around 65% at 10 features and had a slight increase as the number of features increased. To compare this model with the Linear Regression model, we chose the 15 most important features to test and train the Random Forest model.</p>
+<p>We found that the Random Rorest Regression model had the higher training and validation scores than the Linear Regresion model. The training score reached nearly 100% when ran with more than 10 features. The testing accuracy reached around 65% at 10 features and had a slight increase as the number of features increased. To compare this model with the Linear Regression model, we chose the 15 most important features to test and train the Random Forest model. After training and testing our model on the subset of 15 features, we got a testing accuracy score of 55.4%, which is significantly better than our multiple linear regression model. Considering there is no option for our model to randomly guess since we are predicting a continuous numeric value, we are satisfied with the amount our random forest model learned.</p>
 <p>Interestingly, there is only one feature that the Linear Regression model and the Random Forest Regression model both selected: max_rear_shoulder_y. This feature captures the top hand on the bat, so if the shoulder isn’t moving in the swing, it will hinder the ability to produce enough rotational force from the torso.</p>
 <p>We were suprised to find that, of the 13 features selected by the Linear Regression model and of the 15 features selected by the Random Forest Regression model, there weren’t more similarities amongst the selected features between the two models. We were hoping to discover a few select features that both models identified as important features, and were interested to find that the majority of the selected features were different.</p>
 <p>We hypothesize that the dimentionality of the forces produced by each body part may be a factor that contributes toward the challenge of distinguishing significant features. For example, in the Linear Regression model, max_toros_y was selected as an important feautre, and in the Random Forest Regression model, max_torso_z was selected as an important feature. This indicates that the max force produced by the torso is important when creating and predicting bat speed. If we were to run this experiment again, we may try getting rid of the x, y and z components and just use the average of the forces produced by that body part.</p>
@@ -590,7 +594,7 @@ background-size: cover;
 <span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
 <span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>plt.show() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="22">
+<div class="cell" data-jupyter="{&quot;source_hidden&quot;:true}" data-tags="[]" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> RandomForestRegressor <span class="im">import</span> RandomForest</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>rf <span class="op">=</span> RandomForest()</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -825,6 +829,11 @@ background-size: cover;
 </div>
 </div>
 </section>
+<section id="concluding-discussion" class="level3">
+<h3 class="anchored" data-anchor-id="concluding-discussion">Concluding Discussion</h3>
+<p>Overall, our project was sucessful, as we built two models and an RFE function to help us determine the most important features of a swing while predicting bat speed. When we formulated the idea for our project idea, our goal was to deliver python source code that we constructed, along with two jupyter notebooks. One that contained our intial exploration, and one that held our final write up and experiments. We were sucessful in meeting this goal, as we finished with more than two jupyter notebooks, and two python source code files that contained our linear regression with RFE and our random forest model.</p>
+<p>If we had more time, we would work on finding ways to improve the accuracy of our models. One idea we have to improve accuracy score is to get rid of the dimension factor, as we mentioned above, so each biomechanic force only has one representation instead of three. We hope this would help our models narrow down the important features and produce a better accuracy score. Additionally, we would like to bring in more data to train and test our model on. DriveLine baseball technology is relatively new, so the data is sparse. If the technology was more accesible, we could have more data which would allow our model to improve its success.</p>
+</section>
 </section>
 <section id="bias" class="level1">
 <h1>Bias</h1>
@@ -836,9 +845,7 @@ background-size: cover;
 </section>
 <section id="application" class="level1">
 <h1>Application</h1>
-<ul>
-<li>How could this be used by other teams/sports/groups</li>
-</ul>
+<p>Our bat speed model could be used by coaching staffs to better inform the decisions that they make. For example, if a given player’s predicted bat speed is higher than their actual recorded bat speed, this would indicate a mechanical inefficiency in their swing. Coaches, with this knowledge, could then direct their focus to finding these mechanical ineffeciencies and correcting them. Players in this group would spend more time on skill acquisition training. On the other hand, if a player has a predicted bat speed which is equal to or lower than their actual bat speed, this would indicate above average efficiency in their swing and their training could be directed more towards general strength and power to increase force production. In either case, our model would help streamline the process from data collection to impact, giving coaches and players the power to have impactful training sessions tailored to each individual.</p>
 </section>
 <section id="group-contribution-statement" class="level1">
 <h1>Group Contribution Statement</h1>
@@ -846,6 +853,15 @@ background-size: cover;
 <p>David Byrne: Introduced topic. Managed data cleaning. Led writing of “Abstract and Overview of Significance of Topic”, “Data”, “Variable Overview”, “Values Statement”, and “Application” sections.</p>
 <p>Julia Fairbank: Led writing of “Formal Introduction to Topic”, “Recursive Feature Elimination”, “Multiple Linear Regression”, “Random Forest Regression”, “The Process”, and “Bias” sections.</p>
 <p>Sam Ehrsam: Conducted initial RFE experiments with SKLearn library. Built Random Forest Regression model. Performed RFE experiments.</p>
+</section>
+<section id="personal-reflection" class="level1">
+<h1>Personal Reflection</h1>
+<p>This was an awesome final group project to wrap up my college experience!! I am so grateful and glad to have been apart of this group, everyone was awesome!! I feel like we all contributed in such strong ways and leaned on each other’s strengths in a very productive way. Everyone was very accomadating, communicative, and helpful! We utilized When2Meet.com to handle scheduling across 4 very busy and different calendars and opted into smaller group meetings whenever there was overlap between group members.</p>
+<p>We also prioritized documenting our process as we went in order to lighten the load on writing the blog post. This decision ended up being a lifesaver because we had detailed explanations for each step, so if a group member couldn’t make a meeting, they would be able to catch-up by reading our process.</p>
+<p>I feel like I learned a ton about collecting and working with data, especially since we had such a massive initial dataset. Our group had so many conversations about making sure we knew exactly the goal of our project and what our target variables were. This allowed us to compress a lot of excess data and focus us more on a subset of data that was easier to work with.</p>
+<p>We also learned a lot about adapting our plan, especially when our Linear Regression model that we thought would work well produced low accuracy results. While it was difficult to have to adjust our plan and try out the Random Forest Regression model, this flexibility allowed us to compare two different models and actually made our process and discussion more comprehensive.</p>
+<p>We definitely achieved our goal of creating a working model that predicts bat speed. While it may not have the accuracy that we were hoping for, we learned a ton about problem-solving and implementation along the way. We also met my intial goal of meeting often and submitting all milestones on time.</p>
+<p>I think I will carry a lot of the communication skills we develpoed on this project. A large piece of our success was communicating what we were each interested in working on and everyone having the flexibility to fill in the gaps or pick up slack as needed. I really feel like we were able to efficiently work through this big project quite well, probably the best I’ve ever had for a group project in college, so I am hopeful that I can carry these skills with me as I enter the workforce soon!!</p>
 
 
 </section>
